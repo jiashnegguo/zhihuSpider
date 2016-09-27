@@ -14,7 +14,7 @@ function getUserInfo($result)
 {
 	$user = array();
 
-	preg_match_all('#<a class="name" href="/people\/(.*)">(.*)</a>#', $result, $out);
+	preg_match_all('#<a class="name" href="/people\/(.*?)">(.*?)</a>#', $result, $out);
 	$user['u_id'] = empty($out[1]) ? '' : $out[1][0];
 	$user['u_name'] = empty($out[2]) ? '' : $out[2][0];
 
@@ -41,40 +41,42 @@ function getUserInfo($result)
 	preg_match('#<span class="content">\s(.*?)\s</span>#s', $result, $out);
 	$user['description'] = empty($out[1]) ? '' : trim(strip_tags($out[1]));
 
-	preg_match('#<span class="zg-gray-normal">关注了</span><br>\s<strong>(.*?)</strong><label> 人</label>#', $result, $out);
+	preg_match('#<span class="zg-gray-normal">关注了</span><br />\s+<strong>(.*?)</strong><label> 人</label>#', $result, $out);
 	$user['followees_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#<span class="zg-gray-normal">关注者</span><br>\s<strong>(.*?)</strong><label> 人</label>#', $result, $out);
+	preg_match('#<span class="zg-gray-normal">关注者</span><br />\s+<strong>(.*?)</strong><label> 人</label>#', $result, $out);
 	$user['followers_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#<strong>(.*?) 个专栏</strong>#', $result, $out);
+	unset($out[1]);
+
+	//preg_match('#<strong>(.*?) 个专栏</strong>#', $result, $out);
 	$user['special_count'] = empty($out[1]) ? 0 : intval($out[1]);
 
-	preg_match('#<strong>(.*?) 个话题</strong>#', $result, $out);
+	//preg_match('#<strong>(.*?) 个话题</strong>#', $result, $out);
 	$user['follow_topic_count'] = empty($out[1]) ? 0 : intval($out[1]);
 
-	preg_match('#<span class="zm-profile-header-user-agree"><span class="zm-profile-header-icon"></span><strong>(.*?)</strong>赞同</span>#', $result, $out);
+	//preg_match('#<span class="zm-profile-header-user-agree"><span class="zm-profile-header-icon"></span><strong>(.*?)</strong>赞同</span>#', $result, $out);
 	$user['approval_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#<span class="zm-profile-header-user-thanks"><span class="zm-profile-header-icon"></span><strong>(.*?)</strong>感谢</span>#', $result, $out);
+	//preg_match('#<span class="zm-profile-header-user-thanks"><span class="zm-profile-header-icon"></span><strong>(.*?)</strong>感谢</span>#', $result, $out);
 	$user['thank_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#提问\s<span class="num">(.*?)</span>#', $result, $out);
+	//preg_match('#提问\s<span class="num">(.*?)</span>#', $result, $out);
 	$user['ask_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#回答\s<span class="num">(.*?)</span>#', $result, $out);
+	//preg_match('#回答\s<span class="num">(.*?)</span>#', $result, $out);
 	$user['answer_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#文章\s<span class="num">(.*?)</span>#', $result, $out);
+	//preg_match('#文章\s<span class="num">(.*?)</span>#', $result, $out);
 	$user['article_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#个人主页被 <strong>(.*?)</strong> 人浏览#', $result, $out);
+	//preg_match('#个人主页被 <strong>(.*?)</strong> 人浏览#', $result, $out);
 	$user['pv_count'] = empty($out[1]) ? 0 : intval($out[1]);
 
-	preg_match('#收藏\s<span class="num">(.*?)</span>#', $result, $out);
+	//preg_match('#收藏\s<span class="num">(.*?)</span>#', $result, $out);
 	$user['started_count'] = empty($out[1]) ? 0 : $out[1];
 
-	preg_match('#公共编辑\s<span class="num">(.*?)</span>#', $result, $out);
+	//preg_match('#公共编辑\s<span class="num">(.*?)</span>#', $result, $out);
 	$user['public_edit_count'] = empty($out[1]) ? 0 : $out[1];
 
 	$user['duplicate_count'] = 1;
@@ -125,7 +127,7 @@ function dealUserInfo($user_list, $u_id, $user_type = 'followees', $u_name)
 	}
 	foreach ($user_list as $user)
 	{
-		preg_match('#<h2 class="zm-list-content-title"><a data-tip=".*?" href="https://www.zhihu.com/people/(.*?)" class="zg-link" title="(.*?)">#', $user, $out);
+		preg_match('#<h2 class="zm-list-content-title"><span class="author-link-line">\s+<a data-hovercard=".*?" href="https://www.zhihu.com/people/(.*?)" class=".*?" title="(.*?)"\s*>#', $user, $out);
 		$params = array(
 			'where' => array(
 				'u_id' => $out[1]
@@ -166,7 +168,7 @@ function getOnePageUserList($result, $u_id, $user_type = 'followees', $count, $u
 {
 	$follow_user_list = array();
 	$user_list = array();
-	preg_match_all('#<h2 class="zm-list-content-title"><a data-tip=".*?" href="https://www.zhihu.com/people/(.*?)" class="zg-link" title="(.*?)">#', $result, $out);
+	preg_match_all('#<h2 class="zm-list-content-title"><span class="author-link-line">\s+<a data-hovercard=".*?" href="https://www.zhihu.com/people/(.*?)" class=".*?" title="(.*?)"\s*>#', $result, $out);
 
 	$user_list = Curl::getMultiUser($out[1]);
 	for ($i = 0; $i < $count; $i++)

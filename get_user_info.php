@@ -18,10 +18,14 @@ $redis = PRedis::getInstance();
 $redis->flushdb();
 if ($redis->llen('request_queue') == 0)
 {
-	$redis->lpush('request_queue', 'hector-hu');
+	$redis->lpush('request_queue', 'jiang-yao-yao-52-87');
 }
+
+//init cookie
+Curl::init();
+
 //最大进程数
-$max_connect = 2;
+$max_connect = 4;
 
 //设置log文件目录
 Log::setLogPath('./log');

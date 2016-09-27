@@ -42,6 +42,7 @@ class PDO_MySQL {
 		$option = $config['mysql']['option'];
 		try {
 			$this->pdo = new PDO($dsn, $username, $password, $option);
+			$this->pdo->query('set names utf8');
 			return $this->pdo;
 		} catch(Exception $e) {
 			echo 'catch connection exception, info : ' . $e->__toString();
